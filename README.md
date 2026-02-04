@@ -1,10 +1,10 @@
 # 🪨 Simulateur de Mineurs avec Sémaphores System V
 
-Un programme en C qui simule des mineurs partageant des outils de travail en utilisant les sémaphores System V pour la synchronisation entre processus.
+Un programme en C qui simule des mineurs partageant des outils de travail en utilisant les sémaphores System V pour la synchronisation entre processus. et qui gère la quantité de ressource reçu avec les zones de mémoire partagée.
 
 ## 📋 Description
 
-Ce projet illustre la synchronisation de processus concurrents à l'aide de sémaphores System V. Des mineurs (processus fils) se partagent un nombre limité d'outils (ressources) pour travailler. Seul un nombre défini de mineurs peut travailler simultanément, les autres doivent attendre qu'un outil se libère.
+Ce projet illustre la synchronisation de processus concurrents à l'aide de sémaphores System V. Des mineurs (processus fils) se partagent un nombre limité d'outils (ressources) pour travailler. Seul un nombre défini de mineurs peut travailler simultanément, les autres doivent attendre qu'un outil se libère. chaque mineure récupère une cantité d'or aléatoire, la somme est faites dans une zone de mémoire partagé puis récupéré par le pere à la fin de l'execution de tous les fils.
 
 ## 🎯 Objectifs pédagogiques
 
@@ -13,6 +13,8 @@ Ce projet illustre la synchronisation de processus concurrents à l'aide de sém
 - Gestion de **ressources partagées limitées**
 - Communication inter-processus (IPC)
 - Manipulation de `fork()` et `wait()`
+- Manipulation des **zones de mémoire partagée**.
+- programme pouvant très bien etre adapté pour de l'utilisation en entreprise.
 
 ## 🛠️ Prérequis
 
@@ -29,7 +31,7 @@ gcc -o mineurs mineurs.c
 ## 🚀 Utilisation
 
 ```bash
-./mineurs  
+./mineurs (nb mineurs),(nb_ressource dispo)  
 ```
 
 ### Paramètres
@@ -58,8 +60,9 @@ gcc -o mineurs mineurs.c
    - Si un outil est disponible : il le prend et commence à travailler
    - Si tous les outils sont pris : il attend qu'un outil se libère
 4. **Travail** : Le mineur travaille pendant 0-4 heures (sleep aléatoire)
-5. **Libération d'outil** : Le mineur rend l'outil (opération V sur le sémaphore)
-6. **Fin** : Le processus parent attend que tous les mineurs terminent
+5. **Caisse** : ouverture du coffre par le mineurs avant de rendre les outils pour placé la quantité d'or récupéré
+6. **Libération d'outil** : Le mineur rend l'outil (opération V sur le sémaphore)
+7. **Fin** : Le processus parent attend que tous les mineurs terminent
 
 ## 🔍 Exemple de sortie
 
@@ -72,11 +75,11 @@ le mineur 2 attend 0 heure avant de travailler
 le mineur 3 attend 3 heure avant de travailler 
 le mineur 2 est entrain de travailler et prend les outils  
 le mineur 1 est entrain de travailler et prend les outils  
-le mineur 2 a fini de travailler et rend les outils 
+le mineur 2 a fini de travailler et rend les outils il a récolté X grammes d'or
 le mineur 3 est entrain de travailler et prend les outils  
-le mineur 1 a fini de travailler et rend les outils 
-le mineur 3 a fini de travailler et rend les outils 
-fin du travail des mineurs 
+le mineur 1 a fini de travailler et rend les outils il a récolté X grammes d'or
+le mineur 3 a fini de travailler et rend les outils il a récolté X grammes d'or 
+fin du travail des mineurs la somme totale récupéré est : X grammes d'or
 ```
 
 ## 🔧 Détails techniques
@@ -102,7 +105,7 @@ union semun {
 
 ### Clé IPC
 
-La clé est générée avec `ftok("main", 'T')`, assurez-vous qu'un fichier nommé `main` existe dans le répertoire courant.
+La clé est générée avec `ftok("main", 'T')`, assurez-vous qu'un fichier nommé `main` existe dans le répertoire courant.(Attention je genere deux clées differente pour les zones de mémoire partagé et les semaphores mais basé sur le meme fichier "main"
 
 ## ⚠️ Points importants
 
@@ -110,6 +113,7 @@ La clé est générée avec `ftok("main", 'T')`, assurez-vous qu'un fichier nomm
 - `sem_flg = 0` : le processus **attend** si la ressource n'est pas disponible
 - `sem_flg = IPC_NOWAIT` : le processus **échoue immédiatement** si la ressource n'est pas disponible
 - Le sémaphore est nettoyé avec `IPC_RMID` à la fin du programme
+- les zones de mémoire partagé sont ouverte par chaque processus quand il en a besoin, grace aux semaphores un seul processus à la fois peut ecrire dans la zone de mémoire partagé
 
 ## 🐛 Nettoyage des sémaphores
 
