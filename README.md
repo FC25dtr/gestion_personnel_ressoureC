@@ -1,4 +1,4 @@
-# 🪨 Simulateur de Mineurs avec Sémaphores System V
+# 🪨 Simulateur de Mineurs avec Sémaphores et zones de mémoire partagée System V
 
 Un programme en C qui simule des mineurs partageant des outils de travail en utilisant les sémaphores System V pour la synchronisation entre processus. et qui gère la quantité de ressource reçu avec les zones de mémoire partagée.
 
